@@ -114,6 +114,7 @@ void setup() {
 
 void loop() {
   M5.update();
+
   if (M5.BtnA.wasPressed()) {
     if (count_switch == 0) {
       M5.Lcd.printf("count 0 NOMAL \r\n");
@@ -170,4 +171,15 @@ void loop() {
     playMP3("/hellow.mp3");
     delay(10);
   }
+
+  if (M5.BtnC.wasPressed()) {
+    M5.Lcd.clear(BLACK);
+    M5.Lcd.setCursor(0, 0);
+    if (!M5.Power.isChargeFull()) {
+      M5.Lcd.printf("Charging \r\n");
+    }else{
+      M5.Lcd.printf("Charge Full \r\n");
+    }
+  }
+
 }
