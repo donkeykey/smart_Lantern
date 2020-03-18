@@ -6,14 +6,13 @@
 #include "AudioGeneratorMP3.h"
 #include "AudioOutputI2S.h"
 
-#define SINGLE_PIN 2
-#define RING_PIN 5
+#define LED_PIN 22
 
 #define SINGLE_LED 1
-#define RING_LEDS 16
+#define RING_LED 16
 
-CRGB single[SINGLE_LED];
-CRGB ring[RING_LEDS];
+CRGB leds[SINGLE_LED + RING_LED];
+
 int count_switch = 0;
 
 AudioGeneratorMP3 *mp3;
@@ -73,8 +72,8 @@ void yuragi(bool flag) {
     blue = 0;
   }
 
-  for (int i = 0; i < RING_LEDS; i++) {
-    ring[i].setRGB(red, green, blue);
+  for (int i = 0; i < RING_LED; i++) {
+    leds[i].setRGB(red, green, blue);
   }
   FastLED.show();
   count_led++;
@@ -83,25 +82,43 @@ void yuragi(bool flag) {
 }
 
 void led_reset() {
-  for (int i = 0; i < SINGLE_LED; i++) {
-    single[i] = CRGB(0, 0, 0);
-    FastLED.show();
+  
+  for (int i = 0; i < SINGLE_LED + RING_LED; i++) {
+    leds[i] = CRGB(255, 255, 0);
   }
+  
+  
+
+  /*
   for (int i = 0; i < RING_LEDS; i++) {
-    ring[i] = CRGB(0, 0, 0);
+    ring[i] = CRGB(100, 0, 0);
     FastLED.show();
   }
+  */
+  
+  FastLED.show();
 }
 
 void setup() {
   M5.begin();
-  M5.Power.begin();
+  //M5.Power.begin();
 
-  FastLED.addLeds<NEOPIXEL, RING_PIN>(ring, RING_LEDS);
-  FastLED.addLeds<NEOPIXEL, SINGLE_PIN>(single, SINGLE_LED);
+  FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, SINGLE_LED + RING_LED);
 
-  led_reset();
+      
+  //playMP3("/hellow.mp3");
 
+
+  //led_reset();
+  for (int i = 0; i < RING_LED; i++) {
+    leds[i] = CRGB(100, 0, 0);
+  }
+  for (int i = RING_LED; i < SINGLE_LED + RING_LED; i++) {
+    leds[i] = CRGB(0, 100, 0);
+  }
+  FastLED.show();
+
+  /*
   M5.Lcd.setTextColor(YELLOW);
   M5.Lcd.setTextSize(2);
   M5.Lcd.setCursor(3, 10);
@@ -110,6 +127,7 @@ void setup() {
   M5.Lcd.println("Press B to Speak");
   M5.Lcd.setTextColor(WHITE);
   M5.Lcd.setTextSize(1);
+  */
 }
 
 void loop() {
@@ -117,46 +135,64 @@ void loop() {
 
   if (M5.BtnA.wasPressed()) {
     if (count_switch == 0) {
-      M5.Lcd.printf("count 0 NOMAL \r\n");
+      //M5.Lcd.printf("count 0 NOMAL \r\n");
       led_reset();
-      on_flag = true;
+      for (int i = 0; i < RING_LED; i++) {
+        leds[i] = CRGB(255, 255, 150);
+      }
+      for (int i = RING_LED; i < SINGLE_LED + RING_LED; i++) {
+        leds[i] = CRGB(0, 0, 0);
+      }
+      FastLED.show();
+      on_flag = false;
       count_switch++;
     }
     else if (count_switch == 1) {
-      M5.Lcd.printf("count 1 BLINKER \r\n");
+      //M5.Lcd.printf("count 1 BLINKER \r\n");
       led_reset();
-      on_flag = false;
-      for (int i = 0; i < SINGLE_LED; i++) {
-        single[i] = CRGB(255, 255, 255);
-        FastLED.show();
+      on_flag = true;
+      for (int i = 0; i < RING_LED; i++) {
+        leds[i] = CRGB(255, 255, 150);
       }
+      for (int i = RING_LED; i < SINGLE_LED + RING_LED; i++) {
+        leds[i] = CRGB(0, 0, 0);
+      }
+      FastLED.show();
       count_switch++;
     }
     else if (count_switch == 2) {
-      M5.Lcd.printf("count 2 HELP \r\n");
+      //M5.Lcd.printf("count 2 HELP \r\n");
       led_reset();
-      int num_blink = 3;
+      int num_blink = 5;
+      on_flag = false;
+      for (int i = RING_LED; i < SINGLE_LED + RING_LED; i++) {
+        leds[i] = CRGB(0, 0, 0);
+      }
       for (int j = 0; j < num_blink; j++) {
-        for (int i = 0; i < RING_LEDS; i++) {
-          ring[i] = CRGB(255, 30, 0);
-          FastLED.show();
+        for (int i = 0; i < RING_LED; i++) {
+          leds[i] = CRGB(255, 30, 0);
         }
+        FastLED.show();
         delay(300);
-        for (int i = 0; i < RING_LEDS; i++) {
-          ring[i] = CRGB(0, 0, 0);
-          FastLED.show();
+        for (int i = 0; i < RING_LED; i++) {
+          leds[i] = CRGB(0, 0, 0);
         }
+        FastLED.show();
         delay(300);
       }
       count_switch++;
     }
     else if (count_switch == 3) {
-      M5.Lcd.printf("count 3 GO \r\n");
+      //M5.Lcd.printf("count 3 GO \r\n");
       led_reset();
-      for (int i = 0; i < RING_LEDS; i++) {
-        ring[i] = CRGB(0, 100, 255);
-        FastLED.show();
+      on_flag = false;
+      for (int i = 0; i < RING_LED; i++) {
+        leds[i] = CRGB(0, 0, 0);
       }
+      for (int i = RING_LED; i < SINGLE_LED + RING_LED; i++) {
+        leds[i] = CRGB(255, 0, 0);
+      }
+      FastLED.show();
       count_switch = 0;
     }
   }
@@ -167,19 +203,19 @@ void loop() {
 
   if (M5.BtnB.wasPressed())
   {
-    M5.Lcd.printf("SPEAK \r\n");
+    //M5.Lcd.printf("SPEAK \r\n");
     playMP3("/hellow.mp3");
     delay(10);
   }
 
   if (M5.BtnC.wasPressed()) {
-    M5.Lcd.clear(BLACK);
-    M5.Lcd.setCursor(0, 0);
-    if (!M5.Power.isChargeFull()) {
-      M5.Lcd.printf("Charging \r\n");
-    }else{
-      M5.Lcd.printf("Charge Full \r\n");
-    }
+    //M5.Lcd.clear(BLACK);
+    //M5.Lcd.setCursor(0, 0);
+    //if (!M5.Power.isChargeFull()) {
+      //M5.Lcd.printf("Charging \r\n");
+    //}else{
+      //M5.Lcd.printf("Charge Full \r\n");
+    //}
   }
 
 }
